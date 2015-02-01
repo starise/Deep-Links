@@ -23,7 +23,8 @@ class DeepLinks
 
 	public function __construct()
 	{
-		add_filter( 'the_content', [ $this, 'deepLinksToContent' ] );
+		// Priority 100: runs after all shortcodes
+		add_filter( 'the_content', [ $this, 'deepLinksToContent' ], 100 );
 	}
 
 	/**
