@@ -46,7 +46,7 @@ class DeepLinks
 				$anchorLink = sprintf( '<a class="deep-link" href="#%s"></a>', $id );
 				$anchorLink = apply_filters( 'header_anchor_link', $anchorLink, $id );
 				$replace[]  = sprintf( '%1$s<%2$s%3$s%4$s>%5$s</%2$s>', $anchorLink, $match['tag_name'], $match['tag_extra'], $idAttr, $match['tag_contents'] );
-				array_push( $this->anchors, [ $match['tag_name'] => $id ] );
+				array_push( $this->anchors, [ $match['tag_name'] => $match['tag_contents'] ] );
 			}
 			$content = str_replace( $find, $replace, $content );
 		}
