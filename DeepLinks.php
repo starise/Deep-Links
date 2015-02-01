@@ -96,41 +96,39 @@ class DeepLinks
 	 */
 	public function getTableOfContents()
 	{
-		$startingDepth = 0;
-		$currentDepth  = -1;
-		$tocList       = '';
-		$tocTagOpen    = '<ul>';
-		$tocTagClose   = '</ul>';
+		$tocList = '';
 
 		if ( !empty( $this->anchors ) ) {
+			$tocTagOpen    = '<ul>';
+			$tocTagClose   = '</ul>';
 			$anchors       = $this->anchors;
 			$tocList       = $tocTagOpen;
 			$startingDepth = $anchors[0]['depth'];
 			$currentDepth  = $startingDepth;
-		}
 
-		foreach ( $anchors as $anchor ) {
-			$anchorId      = $anchor['id'];
-			$anchorContent = $anchor['content'];
-			$tocElement    = sprintf( '<li><a href="#%s">%s</a></li>', $anchorId, $anchorContent );
+			foreach ( $anchors as $anchor ) {
+				$anchorId      = $anchor['id'];
+				$anchorContent = $anchor['content'];
+				$tocElement    = sprintf( '<li><a href="#%s">%s</a></li>', $anchorId, $anchorContent );
 
-			// Evaluate depth to append or prepend correct tags
-			if ( $anchor['depth'] > $currentDepth ) {
-				$tocElement = sprintf( '%s%s', $tocTagOpen, $tocElement );
-				$currentDepth++;
-			} elseif ( $anchor['depth'] < $currentDepth ) {
-				while ( $anchor['depth'] < $currentDepth ) {
-					$tocElement = sprintf( '%s%s', $tocTagClose, $tocElement );
-					$currentDepth--;
+				// Evaluate depth opening or closing tag as appropriate
+				if ( $anchor['depth'] > $currentDepth ) {
+					$tocElement = sprintf( '%s%s', $tocTagOpen, $tocElement );
+					$currentDepth++;
+				} elseif ( $anchor['depth'] < $currentDepth ) {
+					while ( $anchor['depth'] < $currentDepth ) {
+						$tocElement = sprintf( '%s%s', $tocTagClose, $tocElement );
+						$currentDepth--;
+					}
 				}
+				$tocList .= $tocElement;
 			}
-			$tocList .= $tocElement;
-		}
 
-		// Close all tags still open
-		while ( $currentDepth >= $startingDepth ) {
-			$tocList .= $tocTagClose;
-			$currentDepth--;
+			// Close all tags still open
+			while ( $currentDepth >= $startingDepth ) {
+				$tocList .= $tocTagClose;
+				$currentDepth--;
+			}
 		}
 
 		return $tocList;
