@@ -32,9 +32,9 @@ class DeepLinks
 	 * Creates as object an array of headings formatted like:
 	 *
 	 * $anchors = [
-	 *   'depth' => int Element depth (1 for h1, 2 for h2, ...)
-	 *   'id'    => string DOM id property of heading
-	 *   'title' => string Content inside of heading
+	 *   'depth'   => int Element depth (1 for h1, 2 for h2, ...)
+	 *   'id'      => string DOM id property of heading
+	 *   'content' => string Content inside of heading
 	 * ];
 	 *
 	 * @param  string $content Post/Page content from database
@@ -69,14 +69,69 @@ class DeepLinks
 				$anchorLink = apply_filters( 'heading_anchor_link', $anchorLink, $tagContent, $id );
 				$replace[]  = sprintf( '%1$s<%2$s%3$s%4$s>%5$s</%2$s>', $anchorLink, $match['tag_name'], $match['tag_extra'], $idAttr, $match['tag_contents'] );
 				$this->anchors[] = [
-					'depth' => (int)substr($match['tag_name'], 1),
-					'id'    => $id,
-					'title' => $match['tag_contents']
+					'depth'   => (int)substr($match['tag_name'], 1),
+					'id'      => $id,
+					'content' => $match['tag_contents']
 				];
 			}
 			$content = str_replace( $find, $replace, $content );
 		}
 
 		return $content;
+	}
+
+	/**
+	 * Build HTML hierarchically formatted list of anchor links.
+	 * Must work with an array of anchors formatted like this:
+	 *
+	 * $anchors = [
+	 *   'depth'   => int Element depth (1 for h1, 2 for h2, ...)
+	 *   'id'      => string DOM id property of heading
+	 *   'content' => string Content inside of heading
+	 * ];
+	 *
+	 * @param  array  $anchors array of anchors formatted as above
+	 * @return string HTML formatted list of anchors
+	 */
+	public function getTableOfContents()
+	{
+		$startingDepth = 0;
+		$currentDepth  = -1;
+		$tocList       = '';
+		$tocTagOpen    = '<ul>';
+		$tocTagClose   = '</ul>';
+
+		if ( !empty( $this->anchors ) ) {
+			$anchors       = $this->anchors;
+			$tocList       = $tocTagOpen;
+			$startingDepth = $anchors[0]['depth'];
+			$currentDepth  = $startingDepth;
+		}
+
+		foreach ( $anchors as $anchor ) {
+			$anchorId      = $anchor['id'];
+			$anchorContent = $anchor['content'];
+			$tocElement    = sprintf( '<li><a href="#%s">%s</a></li>', $anchorId, $anchorContent );
+
+			// Evaluate depth to append or prepend correct tags
+			if ( $anchor['depth'] > $currentDepth ) {
+				$tocElement = sprintf( '%s%s', $tocTagOpen, $tocElement );
+				$currentDepth++;
+			} elseif ( $anchor['depth'] < $currentDepth ) {
+				while ( $anchor['depth'] < $currentDepth ) {
+					$tocElement = sprintf( '%s%s', $tocTagClose, $tocElement );
+					$currentDepth--;
+				}
+			}
+			$tocList .= $tocElement;
+		}
+
+		// Close all tags still open
+		while ( $currentDepth >= $startingDepth ) {
+			$tocList .= $tocTagClose;
+			$currentDepth--;
+		}
+
+		return $tocList;
 	}
 }
