@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: WP Deep Links
- * Description: Adds anchor link and ID to all headers in content.
+ * Description: Adds anchor link and ID to all headings in content.
  * Version: 1.0.0
  * Author: starise
  * Author URI: http://stari.se
@@ -43,10 +43,15 @@ class DeepLinks
 				$find[]     = $match['full_tag'];
 				$id         = sanitize_title( $match['tag_contents'] );
 				$idAttr     = sprintf( ' id="%s"', $id );
-				$anchorLink = sprintf( '<a class="deep-link" href="#%s"></a>', $id );
-				$anchorLink = apply_filters( 'header_anchor_link', $anchorLink, $id );
+				$tagContent = $match['tag_contents'];
+				$anchorLink = sprintf( '<a class="deep-link" href="#%s">%s</a>', $id, $tagContent );
+				$anchorLink = apply_filters( 'heading_anchor_link', $anchorLink, $tagContent, $id );
 				$replace[]  = sprintf( '%1$s<%2$s%3$s%4$s>%5$s</%2$s>', $anchorLink, $match['tag_name'], $match['tag_extra'], $idAttr, $match['tag_contents'] );
-				array_push( $this->anchors, [ $match['tag_name'] => $match['tag_contents'] ] );
+				$this->anchors[] = [
+					'depth' => (int)substr($match['tag_name'], 1),
+					'id'    => $id,
+					'title' => $match['tag_contents']
+				];
 			}
 			$content = str_replace( $find, $replace, $content );
 		}
