@@ -9,16 +9,21 @@
 
 namespace starise\Wordpress;
 
-add_action( 'plugins_loaded', [ __NAMESPACE__ . '\\DeepLinks', 'init' ] );
+add_action( 'plugins_loaded', [ DeepLinks::get_instance(), '__construct' ] );
 
 class DeepLinks
 {
+	protected static $instance = NULL;
 	public $anchors = [];
 
-	public static function init()
+	/**
+	 * Access this plugin’s working instance
+	 * @return  object of this class
+	 */
+	public static function get_instance()
 	{
-		$class = __CLASS__;
-		new $class;
+		NULL === self::$instance and self::$instance = new self;
+		return self::$instance;
 	}
 
 	public function __construct()
