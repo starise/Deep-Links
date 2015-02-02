@@ -33,16 +33,21 @@ class TocWidget extends \WP_Widget {
 	 */
 	public function widget( $args, $instance )
 	{
-		extract( $args );
-		$title = apply_filters( 'widget_title', $instance['title'] );
-
-		echo $before_widget;
-		if ( ! empty( $title ) ) {
-			echo $before_title . $title . $after_title;
-		}
 		$DeepLinks = DeepLinks::get_instance();
-		echo $DeepLinks->getTableOfContents();
-		echo $after_widget;
+		$tocList = $DeepLinks->getTableOfContents();
+
+		if ( !empty( $tocList ) ) {
+			extract( $args );
+			$title = apply_filters( 'widget_title', $instance['title'] );
+
+			echo $before_widget;
+			if ( ! empty( $title ) ) {
+				echo $before_title . $title . $after_title;
+			}
+
+			echo $tocList;
+			echo $after_widget;
+		}
 	}
 
 	/**
