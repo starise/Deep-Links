@@ -1,11 +1,4 @@
 <?php
-/**
- * Plugin Name: WP Deep Links
- * Description: Adds anchor link and ID to all headings in content.
- * Version: 1.0.0
- * Author: starise
- * Author URI: http://stari.se
- */
 
 namespace starise\Wordpress;
 
@@ -18,7 +11,7 @@ class DeepLinks
 
 	/**
 	 * Access this plugin’s working instance
-	 * @return  object of this class
+	 * @return object of this class
 	 */
 	public static function get_instance()
 	{
