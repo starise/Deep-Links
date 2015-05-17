@@ -1,12 +1,13 @@
 <?php
 
-namespace starise\Wordpress;
+namespace starise;
 
 add_action('plugins_loaded', [DeepLinks::get_instance(), '__construct']);
 
 class DeepLinks
 {
 	protected static $instance = NULL;
+
 	public $anchors = [];
 
 	/**

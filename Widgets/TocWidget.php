@@ -1,8 +1,8 @@
 <?php
 
-namespace starise\Wordpress\Widgets;
+namespace starise\Widgets;
 
-use starise\Wordpress\DeepLinks as DeepLinks;
+use starise\DeepLinks as DeepLinks;
 
 add_action('widgets_init', [__NAMESPACE__ . '\\TocWidget', 'init']);
 
