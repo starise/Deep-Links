@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: Deep Links
- * Description: Adds anchor link and ID to all headings in content.
+ * Description: Utility to add anchor links and IDs to all headings in content.
  * Version:     1.0.0
  * Author:      starise
  * Author URI:  http://stari.se
