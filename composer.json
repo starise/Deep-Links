@@ -1,0 +1,24 @@
+{
+  "name": "starise/deep-links",
+  "type": "wordpress-plugin",
+  "license": "GPL-2.0",
+  "description": "Utility to add anchor links and IDs to all headings in content.",
+  "homepage": "https://github.com/starise/Deep-Links",
+  "authors": [
+    {
+      "name": "Andrea Brandi",
+      "email": "info@andreabrandi.com",
+      "homepage": "https://github.com/starise"
+    }
+  ],
+  "keywords": [
+    "wordpress"
+  ],
+  "support": {
+    "issues": "https://github.com/starise/Deep-Links/issues"
+  },
+  "require": {
+    "php": ">=5.4.0",
+    "composer/installers": "~1.0"
+  }
+}
