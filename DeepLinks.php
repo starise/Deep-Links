@@ -2,7 +2,7 @@
 
 namespace starise\Wordpress;
 
-add_action( 'plugins_loaded', [ DeepLinks::get_instance(), '__construct' ] );
+add_action('plugins_loaded', [DeepLinks::get_instance(), '__construct']);
 
 class DeepLinks
 {
@@ -22,7 +22,7 @@ class DeepLinks
 	public function __construct()
 	{
 		// Priority 100: runs after all shortcodes
-		add_filter( 'the_content', [ $this, 'deepLinksToContent' ], 100 );
+		add_filter('the_content', [$this, 'deepLinksToContent'], 100);
 	}
 
 	/**
@@ -39,23 +39,23 @@ class DeepLinks
 	 * @param  string $content Post/Page content from database
 	 * @return string          Filtered content to display
 	 */
-	public function deepLinksToContent( $content )
+	public function deepLinksToContent($content)
 	{
-		if ( ! is_single() || is_page() ) {
+		if (! is_single() || is_page()) {
 			return $content;
 		}
 
 		$pattern = '#(?P<full_tag><(?P<tag_name>h\d)(?P<tag_extra>[^>]*)>(?P<tag_contents>[^<]*)</h\d>)#i';
-		if ( preg_match_all( $pattern, $content, $matches, PREG_SET_ORDER ) ) {
-			$find = [];
+		if (preg_match_all($pattern, $content, $matches, PREG_SET_ORDER)) {
+			$find    = [];
 			$replace = [];
-			foreach( $matches as $match ) {
-				if ( strlen( $match['tag_extra'] ) && false !== stripos( $match['tag_extra'], 'id=' ) ) {
+			foreach($matches as $match) {
+				if (strlen($match['tag_extra']) && false !== stripos($match['tag_extra'], 'id=')) {
 					continue;
 				}
-				$id         = sanitize_title( $match['tag_contents'] );
+				$id         = sanitize_title($match['tag_contents']);
 				$tagContent = $match['tag_contents'];
-				$anchorLink = sprintf( '<a class="deep-link" href="#%s">%s</a>', $id, $tagContent );
+				$anchorLink = sprintf('<a class="deep-link" href="#%s">%s</a>', $id, $tagContent);
 				/**
 				 * Filter for anchor link formatting.
 				 *
@@ -64,15 +64,15 @@ class DeepLinks
 				 * @param string $tagContent Content inside heading
 				 */
 				$find[]     = $match['full_tag'];
-				$anchorLink = apply_filters( 'deep_link', $anchorLink, $id, $tagContent );
-				$replace[]  = sprintf( '<%1$s%2$s id="%3$s">%4$s</%1$s>', $match['tag_name'], $match['tag_extra'], $id, $anchorLink );
+				$anchorLink = apply_filters('deep_link', $anchorLink, $id, $tagContent);
+				$replace[]  = sprintf('<%1$s%2$s id="%3$s">%4$s</%1$s>', $match['tag_name'], $match['tag_extra'], $id, $anchorLink);
 				$this->anchors[] = [
 					'depth'   => (int)substr($match['tag_name'], 1),
 					'id'      => $id,
 					'content' => $tagContent
 				];
 			}
-			$content = str_replace( $find, $replace, $content );
+			$content = str_replace($find, $replace, $content);
 		}
 
 		return $content;
@@ -95,7 +95,7 @@ class DeepLinks
 	{
 		$tocList = '';
 
-		if ( !empty( $this->anchors ) ) {
+		if (!empty($this->anchors)) {
 			$tocTagOpen    = '<ul>';
 			$tocTagClose   = '</ul>';
 			$anchors       = $this->anchors;
@@ -103,18 +103,18 @@ class DeepLinks
 			$startingDepth = $anchors[0]['depth'];
 			$currentDepth  = $startingDepth;
 
-			foreach ( $anchors as $anchor ) {
+			foreach ($anchors as $anchor) {
 				$anchorId      = $anchor['id'];
 				$anchorContent = $anchor['content'];
-				$tocElement    = sprintf( '<li><a href="#%s">%s</a></li>', $anchorId, $anchorContent );
+				$tocElement    = sprintf('<li><a href="#%s">%s</a></li>', $anchorId, $anchorContent);
 
 				// Evaluate depth opening or closing tag as appropriate
-				if ( $anchor['depth'] > $currentDepth ) {
-					$tocElement = sprintf( '%s%s', $tocTagOpen, $tocElement );
+				if ($anchor['depth'] > $currentDepth) {
+					$tocElement = sprintf('%s%s', $tocTagOpen, $tocElement);
 					$currentDepth++;
-				} elseif ( $anchor['depth'] < $currentDepth ) {
-					while ( $anchor['depth'] < $currentDepth ) {
-						$tocElement = sprintf( '%s%s', $tocTagClose, $tocElement );
+				} elseif ($anchor['depth'] < $currentDepth) {
+					while ($anchor['depth'] < $currentDepth) {
+						$tocElement = sprintf('%s%s', $tocTagClose, $tocElement);
 						$currentDepth--;
 					}
 				}
@@ -122,7 +122,7 @@ class DeepLinks
 			}
 
 			// Close all tags still open
-			while ( $currentDepth >= $startingDepth ) {
+			while ($currentDepth >= $startingDepth) {
 				$tocList .= $tocTagClose;
 				$currentDepth--;
 			}
