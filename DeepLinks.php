@@ -53,24 +53,23 @@ class DeepLinks
 				if ( strlen( $match['tag_extra'] ) && false !== stripos( $match['tag_extra'], 'id=' ) ) {
 					continue;
 				}
-				$find[]     = $match['full_tag'];
 				$id         = sanitize_title( $match['tag_contents'] );
-				$idAttr     = sprintf( ' id="%s"', $id );
 				$tagContent = $match['tag_contents'];
 				$anchorLink = sprintf( '<a class="deep-link" href="#%s">%s</a>', $id, $tagContent );
 				/**
 				 * Filter for anchor link formatting.
 				 *
-				 * @param string $anchorLink Anchor link to append before heading
-				 * @param string $tagContent Content inside heading
+				 * @param string $anchorLink Anchor link to appended in heading
 				 * @param string $id         DOM id property of current heading
+				 * @param string $tagContent Content inside heading
 				 */
-				$anchorLink = apply_filters( 'heading_anchor_link', $anchorLink, $tagContent, $id );
-				$replace[]  = sprintf( '%1$s<%2$s%3$s%4$s>%5$s</%2$s>', $anchorLink, $match['tag_name'], $match['tag_extra'], $idAttr, $match['tag_contents'] );
+				$find[]     = $match['full_tag'];
+				$anchorLink = apply_filters( 'deep_link', $anchorLink, $id, $tagContent );
+				$replace[]  = sprintf( '<%1$s%2$s id="%3$s">%4$s</%1$s>', $match['tag_name'], $match['tag_extra'], $id, $anchorLink );
 				$this->anchors[] = [
 					'depth'   => (int)substr($match['tag_name'], 1),
 					'id'      => $id,
-					'content' => $match['tag_contents']
+					'content' => $tagContent
 				];
 			}
 			$content = str_replace( $find, $replace, $content );
